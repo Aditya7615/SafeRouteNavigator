@@ -1,9 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-// In Vite, we access environment variables through import.meta.env
-// Make sure the token is prefixed with VITE_ in the .env file
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoicHJvamVjdC10ZXN0aW5nIiwiYSI6ImNsc2ZzNXZ3MzAydjQyanRlMXRoejdtMDgifQ.1wF33V15u_0dDMzv9jzHwg';
+// Using the Mapbox token we received from the environment
+mapboxgl.accessToken = 'pk.eyJ1IjoicHVibGljLXNhZmV0eSIsImEiOiJjbHNna3VmOWkwMm51MnFwOGduYmxiNHQxIn0.qzCv-vB5DNzzzS1VHPhuJA';
 
 interface MapProps {
   latitude?: number;
@@ -48,7 +47,8 @@ const Map: React.FC<MapProps> = ({
   useEffect(() => {
     if (map.current) return; // Initialize map only once
     
-    mapboxgl.accessToken = MAPBOX_TOKEN;
+    // We're setting this directly with the token we've imported
+    // mapboxgl.accessToken was already set at the top of the file
     
     if (mapContainer.current) {
       map.current = new mapboxgl.Map({

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Map from '@/components/ui/map';
 import { indianCities } from '@/lib/cities';
 import { useToast } from '@/hooks/use-toast';
+import MapDisplay from '@/components/MapDisplay';
 
 const MapPage = () => {
   const { toast } = useToast();
@@ -152,14 +152,12 @@ const MapPage = () => {
               </div>
             </div>
           ) : (
-            <Map
-              latitude={mapData?.cityCenter?.lat || 28.6139}
-              longitude={mapData?.cityCenter?.lng || 77.2090}
-              zoom={12}
-              height="600px"
-              markers={getMarkers()}
-              routes={mapData?.safeRoutes || []}
-            >
+            <div className="relative h-[600px]">
+              <MapDisplay 
+                center={mapData?.cityCenter || { lat: 28.6139, lng: 77.2090 }}
+                markers={getMarkers()}
+                routes={mapData?.safeRoutes || []}
+              />
               {/* Map overlay elements */}
               <div className="absolute bottom-4 left-4 glass rounded-lg p-3 z-10">
                 <div className="text-white text-sm font-medium mb-2">Safety Level</div>
@@ -180,7 +178,7 @@ const MapPage = () => {
               <div className="absolute bottom-4 right-4 glass rounded-lg p-2 z-10">
                 <span className="text-white text-xs">© SafeRoute Maps | Data © {new Date().getFullYear()}</span>
               </div>
-            </Map>
+            </div>
           )}
         </div>
         
