@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 220 90% 56%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 142 70% 49%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans bg-[#121212] text-gray-100;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+/* Custom Classes */
+.glass {
+  @apply bg-[rgba(30,30,30,0.8)] backdrop-blur-md border border-gray-700/20;
+}
+
+.gradient-bg {
+  @apply bg-gradient-to-r from-[#1E1E1E] to-[#181818];
+}
+
+.gradient-purple {
+  @apply bg-gradient-to-r from-primary to-[#8B5CF6];
+}
+
+.gradient-green {
+  @apply bg-gradient-to-r from-accent to-[#059669];
+}
+
+.gradient-red {
+  @apply bg-gradient-to-r from-destructive to-[#DC2626];
+}
+
+.gradient-blue {
+  @apply bg-gradient-to-r from-primary to-[#2563EB];
+}
+
+.route-card {
+  @apply transition-all duration-300;
+}
+
+.route-card:hover {
+  @apply -translate-y-1 shadow-xl shadow-black/20;
+}
+
+.feature-card {
+  @apply transition-all duration-300;
+}
+
+.feature-card:hover {
+  @apply -translate-y-1 border-primary;
+}
+
+.map-container {
+  @apply h-[450px] bg-center bg-cover relative overflow-hidden;
+}
+
+.safety-indicator {
+  @apply w-3 h-3 rounded-full inline-block mr-2;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-[#1a1a1a];
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
+}
