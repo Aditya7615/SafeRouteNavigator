@@ -30,6 +30,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const safetyData = storage.getSafetyData(city);
     res.json(safetyData);
   });
+  
+  app.get('/api/map-data', (req, res) => {
+    const city = req.query.city as string || 'Delhi NCR';
+    const mapData = storage.getMapData(city);
+    res.json(mapData);
+  });
 
   app.get('/api/alerts', (req, res) => {
     const alerts = storage.getAlerts();

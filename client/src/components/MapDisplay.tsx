@@ -72,21 +72,23 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
       const routeId = `route-${index}`;
       const glowId = `route-glow-${index}`;
       
-      if (map.current.getLayer(routeId)) {
+      if (map.current && map.current.getLayer(routeId)) {
         map.current.removeLayer(routeId);
       }
       
-      if (map.current.getLayer(glowId)) {
+      if (map.current && map.current.getLayer(glowId)) {
         map.current.removeLayer(glowId);
       }
       
-      if (map.current.getSource(routeId)) {
+      if (map.current && map.current.getSource(routeId)) {
         map.current.removeSource(routeId);
       }
     });
     
     // Add each route to the map
     routes.forEach((route, index) => {
+      if (!map.current) return;
+      
       try {
         const sourceId = `route-${index}`;
         const routeId = `route-${index}`;
@@ -154,7 +156,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
     }
     
     // Add new markers
-    markers.forEach(marker => {
+    markers.forEach((marker: MarkerType) => {
       const el = document.createElement('div');
       el.className = 'mapboxgl-marker';
       el.style.width = '16px';
@@ -163,14 +165,16 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
       el.style.backgroundColor = marker.color || '#6366F1';
       el.style.border = '2px solid white';
       
-      const markerInstance = new mapboxgl.Marker(el)
-        .setLngLat([marker.lng, marker.lat])
-        .addTo(map.current);
-        
-      if (marker.popup) {
-        const popup = new mapboxgl.Popup({ offset: 25 })
-          .setHTML(`<div class="text-gray-800">${marker.popup}</div>`);
-        markerInstance.setPopup(popup);
+      if (map.current) {
+        const markerInstance = new mapboxgl.Marker(el)
+          .setLngLat([marker.lng, marker.lat])
+          .addTo(map.current);
+          
+        if (marker.popup) {
+          const popup = new mapboxgl.Popup({ offset: 25 })
+            .setHTML(`<div class="text-gray-800">${marker.popup}</div>`);
+          markerInstance.setPopup(popup);
+        }
       }
     });
   }, [markers, mapLoaded]);

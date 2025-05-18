@@ -23,7 +23,37 @@ const MapPage = () => {
     }
   }, []);
 
-  const { data: mapData, isLoading, error } = useQuery({
+  // Define interfaces for our map data
+  interface SafetyMapData {
+    cityCenter?: { lat: number; lng: number };
+    crimeHotspots?: Array<{ 
+      lat: number; 
+      lng: number; 
+      description: string; 
+      severity?: number;
+      type?: string;
+    }>;
+    poorLighting?: Array<{
+      lat: number;
+      lng: number;
+      description: string;
+      severity?: number;
+    }>;
+    communityReports?: Array<{
+      lat: number;
+      lng: number;
+      description: string;
+      time?: string;
+      type?: string;
+    }>;
+    safeRoutes?: Array<{
+      coordinates: Array<[number, number]>;
+      color: string;
+      width: number;
+    }>;
+  }
+
+  const { data: mapData, isLoading, error } = useQuery<SafetyMapData>({
     queryKey: ['/api/map-data', selectedCity],
     staleTime: 60000, // 1 minute
   });
@@ -49,7 +79,7 @@ const MapPage = () => {
     let markers = [];
     
     if (activeLayers.crime && mapData.crimeHotspots) {
-      markers.push(...mapData.crimeHotspots.map((spot: any) => ({
+      markers.push(...mapData.crimeHotspots.map((spot) => ({
         lat: spot.lat,
         lng: spot.lng,
         color: '#EF4444',
@@ -58,7 +88,7 @@ const MapPage = () => {
     }
     
     if (activeLayers.lighting && mapData.poorLighting) {
-      markers.push(...mapData.poorLighting.map((spot: any) => ({
+      markers.push(...mapData.poorLighting.map((spot) => ({
         lat: spot.lat,
         lng: spot.lng,
         color: '#F59E0B',
@@ -67,11 +97,11 @@ const MapPage = () => {
     }
     
     if (activeLayers.reports && mapData.communityReports) {
-      markers.push(...mapData.communityReports.map((report: any) => ({
+      markers.push(...mapData.communityReports.map((report) => ({
         lat: report.lat,
         lng: report.lng,
         color: '#8B5CF6',
-        popup: `<strong>${report.type}</strong><br/>${report.description}`
+        popup: `<strong>${report.type || 'Community Report'}</strong><br/>${report.description}`
       })));
     }
     
