@@ -54,17 +54,17 @@ const Navigation = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden glass border-t border-gray-700">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href="/#features">
-              <a className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Features</a>
+            <Link href="/#features" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+              Features
             </Link>
-            <Link href="/#how-it-works">
-              <a className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">How it Works</a>
+            <Link href="/#how-it-works" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+              How it Works
             </Link>
-            <Link href="/map">
-              <a className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Live Map</a>
+            <Link href="/map" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+              Live Map
             </Link>
-            <Link href="/#community">
-              <a className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Community</a>
+            <Link href="/#community" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+              Community
             </Link>
             <button className="w-full bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-medium transition-colors mt-3">
               Sign In

@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-// Initialize mapbox using the provided token
-const MAPBOX_TOKEN = import.meta.env.MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94LWRlbW8iLCJhIjoiY2t0bGtzdjZ2MGlvMzJwbXhqaDI0djVhaSJ9.M6xn5efIlkIMGYQbvMoLXw';
+// In Vite, we access environment variables through import.meta.env
+// Make sure the token is prefixed with VITE_ in the .env file
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoicHJvamVjdC10ZXN0aW5nIiwiYSI6ImNsc2ZzNXZ3MzAydjQyanRlMXRoejdtMDgifQ.1wF33V15u_0dDMzv9jzHwg';
 
 interface MapProps {
   latitude?: number;
@@ -124,31 +125,54 @@ const Map: React.FC<MapProps> = ({
     routes.forEach((route, index) => {
       if (!map.current) return;
       
-      map.current.addSource(`route-${index}`, {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'LineString',
-            coordinates: route.coordinates
+      try {
+        map.current.addSource(`route-${index}`, {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: route.coordinates
+            }
           }
-        }
-      });
-      
-      map.current.addLayer({
-        id: `route-${index}`,
-        type: 'line',
-        source: `route-${index}`,
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': route.color,
-          'line-width': route.width
-        }
-      });
+        });
+        
+        // Add glow effect layer first (below the main route)
+        map.current.addLayer({
+          id: `route-glow-${index}`,
+          type: 'line',
+          source: `route-${index}`,
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': route.color,
+            'line-opacity': 0.6,
+            'line-width': route.width + 4,
+            'line-blur': 3
+          }
+        });
+        
+        // Add main route layer
+        map.current.addLayer({
+          id: `route-${index}`,
+          type: 'line',
+          source: `route-${index}`,
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': route.color,
+            'line-width': route.width,
+            'line-dasharray': [0, 4, 3] // Add dash pattern for better visibility
+          }
+        });
+      } catch (error) {
+        console.error(`Error adding route ${index}:`, error);
+      }
     });
   }, [routes, mapLoaded]);
 
