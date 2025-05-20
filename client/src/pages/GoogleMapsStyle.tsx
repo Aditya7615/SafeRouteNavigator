@@ -274,28 +274,122 @@ const GoogleMapsStyle = () => {
     return converted;
   };
   
+  // Get random coordinate variations based on a starting point
+  const getRandomRouteVariations = (baseLat: number, baseLng: number, destinationLat: number, destinationLng: number) => {
+    // Create different route variations between the two points
+    
+    // Calculate midpoints with variations
+    const midLat1 = baseLat + (destinationLat - baseLat) * 0.3 + (Math.random() * 0.01);
+    const midLng1 = baseLng + (destinationLng - baseLng) * 0.3 + (Math.random() * 0.01);
+    
+    const midLat2 = baseLat + (destinationLat - baseLat) * 0.5 + (Math.random() * 0.015);
+    const midLng2 = baseLng + (destinationLng - baseLng) * 0.5 - (Math.random() * 0.01);
+    
+    const midLat3 = baseLat + (destinationLat - baseLat) * 0.7 - (Math.random() * 0.012);
+    const midLng3 = baseLng + (destinationLng - baseLng) * 0.7 + (Math.random() * 0.008);
+    
+    // Create three different route variations
+    const mainRoute = [
+      [baseLng, baseLat],
+      [baseLng + (destinationLng - baseLng) * 0.25, baseLat + (destinationLat - baseLat) * 0.25],
+      [midLng1, midLat1],
+      [midLng2, midLat2],
+      [midLng3, midLat3],
+      [destinationLng, destinationLat]
+    ];
+    
+    const alternateRoute = [
+      [baseLng, baseLat],
+      [baseLng - 0.01, baseLat + 0.01],
+      [baseLng - 0.005, baseLat + (destinationLat - baseLat) * 0.4],
+      [baseLng + (destinationLng - baseLng) * 0.6, baseLat + (destinationLat - baseLat) * 0.6],
+      [destinationLng, destinationLat]
+    ];
+    
+    const shortestRoute = [
+      [baseLng, baseLat],
+      [baseLng + (destinationLng - baseLng) * 0.3, baseLat + (destinationLat - baseLat) * 0.3],
+      [baseLng + (destinationLng - baseLng) * 0.6, baseLat + (destinationLat - baseLat) * 0.6],
+      [destinationLng, destinationLat]
+    ];
+    
+    return {
+      mainRoute,
+      alternateRoute,
+      shortestRoute
+    };
+  };
+  
+  // Calculate distance and time based on coordinates
+  const calculateDistanceAndTime = (coordinates: Array<[number, number]>) => {
+    let totalDistance = 0;
+    
+    // Calculate rough distance along the route
+    for (let i = 0; i < coordinates.length - 1; i++) {
+      const [lng1, lat1] = coordinates[i];
+      const [lng2, lat2] = coordinates[i + 1];
+      
+      // Simple Haversine distance calculation
+      const R = 6371; // Radius of the earth in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lng2 - lng1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+      const distance = R * c; // Distance in km
+      
+      totalDistance += distance;
+    }
+    
+    // Format distance and calculate approximate time (assuming 20 km/h average speed)
+    const formattedDistance = `${totalDistance.toFixed(1)} km`;
+    const timeInMinutes = Math.round(totalDistance / 20 * 60); // Time in minutes
+    const formattedTime = `${timeInMinutes} min`;
+    
+    return { distance: formattedDistance, time: formattedTime };
+  };
+
   // Handle route search submission
   const handleRouteSearch = async (start: string, end: string) => {
     setIsLoading(true);
     
     try {
-      // In a real app, you would fetch from API
-      // For demo, use mock route options
+      // Generate different coordinates based on location names
+      // In a real app, you would use geocoding API to get real coordinates
+      // For demo, use a simple hash function to get consistent random coordinates
+      
+      // Generate hash values from the location names for consistency
+      const startHash = start.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const endHash = end.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      
+      // Base coordinates for Delhi (Center: 28.6139, 77.2090)
+      const baseLat = 28.6139 + (startHash % 10) * 0.001;
+      const baseLng = 77.2090 + (startHash % 15) * 0.001;
+      
+      // Destination coordinates with some variation based on end location
+      const destLat = 28.6139 + (endHash % 20) * 0.002;
+      const destLng = 77.2090 + (endHash % 25) * 0.002;
+      
+      // Get route variations between these points
+      const { mainRoute, alternateRoute, shortestRoute } = getRandomRouteVariations(baseLat, baseLng, destLat, destLng);
+      
+      // Calculate distances and times
+      const mainRouteMetrics = calculateDistanceAndTime(mainRoute);
+      const alternateRouteMetrics = calculateDistanceAndTime(alternateRoute);
+      const shortestRouteMetrics = calculateDistanceAndTime(shortestRoute);
+      
+      // Create route options
       const mockRouteOptions: RouteOption[] = [
         {
           id: "safest-route",
           type: "Safest Route",
           startLocation: start,
           endLocation: end,
-          coordinates: [
-            [77.209, 28.6139], // Delhi center
-            [77.22, 28.63],
-            [77.23, 28.64],
-            [77.235, 28.645],
-            [77.24, 28.65],
-          ],
-          distance: "9.3 km",
-          time: "18 min",
+          coordinates: mainRoute,
+          distance: mainRouteMetrics.distance,
+          time: mainRouteMetrics.time,
           safetyScore: 92,
           lighting: "Excellent",
           color: "#3875f6", // Google maps blue
@@ -309,15 +403,9 @@ const GoogleMapsStyle = () => {
           type: "Alternate Route",
           startLocation: start,
           endLocation: end,
-          coordinates: [
-            [77.209, 28.6139], // Delhi center
-            [77.21, 28.62],
-            [77.22, 28.62],
-            [77.225, 28.63],
-            [77.23, 28.65],
-          ],
-          distance: "8.7 km",
-          time: "16 min",
+          coordinates: alternateRoute,
+          distance: alternateRouteMetrics.distance,
+          time: alternateRouteMetrics.time,
           safetyScore: 75,
           lighting: "Good",
           color: "#777777", // Gray for alternate
@@ -331,14 +419,9 @@ const GoogleMapsStyle = () => {
           type: "Shortest Route",
           startLocation: start,
           endLocation: end,
-          coordinates: [
-            [77.209, 28.6139], // Delhi center
-            [77.215, 28.63],
-            [77.22, 28.635],
-            [77.23, 28.65],
-          ],
-          distance: "7.9 km",
-          time: "14 min",
+          coordinates: shortestRoute,
+          distance: shortestRouteMetrics.distance,
+          time: shortestRouteMetrics.time,
           safetyScore: 64,
           lighting: "Fair",
           color: "#777777", // Gray for alternate
