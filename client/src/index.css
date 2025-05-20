@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Make all text inputs use gray text */
+input, select, textarea {
+  @apply text-gray-300;
+}
 
 
 :root {
