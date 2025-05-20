@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import NavigationDirections from '@/components/NavigationDirections';
 
 // Fix Leaflet icon issue in React
 import icon from 'leaflet/dist/images/marker-icon.png';
