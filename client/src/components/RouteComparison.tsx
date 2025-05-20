@@ -12,8 +12,13 @@ const RouteComparison = () => {
   const [endLocation, setEndLocation] = useState("India Gate, Delhi");
 
   // Pass the locations as parameters to get meaningful distances
-  const { data: routes, isLoading, error } = useQuery({
+  const { data: routes, isLoading, error, refetch } = useQuery({
     queryKey: ['/api/routes/compare', startLocation, endLocation],
+    queryFn: async () => {
+      const response = await fetch(`/api/routes/compare?start=${encodeURIComponent(startLocation)}&end=${encodeURIComponent(endLocation)}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    },
     staleTime: 60000, // 1 minute
   });
 
