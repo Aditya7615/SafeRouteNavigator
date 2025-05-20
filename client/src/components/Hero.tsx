@@ -1,5 +1,6 @@
 import { useState } from "react";
 import RouteForm from "./RouteForm";
+import delhiNightMap from "../assets/delhi-night-map.svg";
 
 const Hero = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,9 +32,9 @@ const Hero = () => {
           <div className="md:w-1/2 md:pl-10">
             <div className="rounded-xl overflow-hidden shadow-2xl relative h-80 md:h-96 transition-all duration-500 hover:shadow-primary/20">
               <img 
-                src="https://pixabay.com/get/gc1710b0e736063dc8d13e10c7326ece4115014f7040154f58457c880384d3c6a8025702a0d073f5517d359ae811a140edac5a0de81bf02845a26ed3b5399afbf_1280.jpg" 
+                src={delhiNightMap} 
                 alt="Delhi city map at night" 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-cover bg-dark-100" 
               />
               <div className="absolute inset-0 bg-black bg-opacity-30"></div>
               <div className="absolute inset-0 flex items-center justify-center">

@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import NavigationDirections from '../components/NavigationDirections';
 
 // Fix Leaflet icon issue in React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -48,6 +49,7 @@ const MapPage = () => {
   const [selectedCity, setSelectedCity] = useState("Delhi NCR");
   const [selectedRoute, setSelectedRoute] = useState<any>(null);
   const [navigationActive, setNavigationActive] = useState(false);
+  const [directions, setDirections] = useState<any[]>([]);
   const [activeLayers, setActiveLayers] = useState({
     crime: true,
     lighting: true,
@@ -55,6 +57,70 @@ const MapPage = () => {
     reports: true
   });
   
+  // Generate directions based on the route
+  const generateDirections = (route: any) => {
+    if (!route || !route.coordinates || route.coordinates.length < 2) {
+      return [];
+    }
+    
+    // Generate turn by turn directions based on the coordinates
+    const directions = [];
+    
+    // Add starting direction
+    directions.push({
+      instruction: "Start your journey",
+      distance: "0 km",
+      time: "0 min",
+      streetName: route.startLocation,
+      safetyNote: route.type === "Safest Route" ? 
+        "You're on the safest route with good visibility and security" : 
+        "Take caution, this route includes some less secure areas"
+    });
+    
+    // If we have enough points, create turn directions
+    if (route.coordinates.length >= 3) {
+      // Generate some turns based on number of coordinates
+      const streets = [
+        "Main Road", "MG Road", "Station Road", "Ring Road", 
+        "Market Street", "College Road", "Temple Street", "Gandhi Marg"
+      ];
+      
+      // Generate directions for intermediate points
+      for (let i = 1; i < route.coordinates.length - 1; i++) {
+        // Alternate between left and right turns for demo purposes
+        const turnDirection = i % 2 === 0 ? "Turn right" : "Turn left";
+        const segment = {
+          instruction: `${turnDirection} onto ${streets[i % streets.length]}`,
+          distance: `${(0.3 + Math.random() * 0.7).toFixed(1)} km`,
+          time: `${Math.floor(3 + Math.random() * 5)} min`,
+          streetName: streets[i % streets.length],
+        };
+        
+        // Add safety notes for some segments
+        if (i % 3 === 0) {
+          if (route.type === "Safest Route") {
+            segment.safetyNote = "This area has good street lighting and security presence";
+          } else {
+            segment.safetyNote = "Stay alert, this area has limited visibility at night";
+          }
+        }
+        
+        directions.push(segment);
+      }
+    }
+    
+    // Add final direction
+    directions.push({
+      instruction: "Arrive at destination",
+      distance: route.distance,
+      time: route.time,
+      streetName: route.endLocation,
+      safetyNote: "You have arrived safely at your destination!"
+    });
+    
+    return directions;
+  };
+
   // Parse query parameters
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -72,6 +138,10 @@ const MapPage = () => {
         try {
           const routeData = JSON.parse(storedRoute);
           setSelectedRoute(routeData);
+          
+          // Generate directions for this route
+          const directionsList = generateDirections(routeData);
+          setDirections(directionsList);
           
           // Show toast about active navigation
           toast({
