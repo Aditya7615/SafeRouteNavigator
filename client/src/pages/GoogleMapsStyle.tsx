@@ -274,42 +274,66 @@ const GoogleMapsStyle = () => {
     return converted;
   };
   
-  // Get random coordinate variations based on a starting point
+  // Get random coordinate variations based on a starting point with more realistic path variations
   const getRandomRouteVariations = (baseLat: number, baseLng: number, destinationLat: number, destinationLng: number) => {
     // Create different route variations between the two points
+    const randomizeFactor = (Math.abs(baseLat - destinationLat) + Math.abs(baseLng - destinationLng)) * 0.05;
     
-    // Calculate midpoints with variations
-    const midLat1 = baseLat + (destinationLat - baseLat) * 0.3 + (Math.random() * 0.01);
-    const midLng1 = baseLng + (destinationLng - baseLng) * 0.3 + (Math.random() * 0.01);
+    // Calculate various midpoints with different deviations for each route
+    // Safer Route - typically has more waypoints but avoids certain areas
+    const safeRoute_midLat1 = baseLat + (destinationLat - baseLat) * 0.2 + (Math.random() * 0.01);
+    const safeRoute_midLng1 = baseLng + (destinationLng - baseLng) * 0.2 + (Math.random() * 0.015);
     
-    const midLat2 = baseLat + (destinationLat - baseLat) * 0.5 + (Math.random() * 0.015);
-    const midLng2 = baseLng + (destinationLng - baseLng) * 0.5 - (Math.random() * 0.01);
+    const safeRoute_midLat2 = baseLat + (destinationLat - baseLat) * 0.4 - (Math.random() * 0.008);
+    const safeRoute_midLng2 = baseLng + (destinationLng - baseLng) * 0.4 + (Math.random() * 0.012);
     
-    const midLat3 = baseLat + (destinationLat - baseLat) * 0.7 - (Math.random() * 0.012);
-    const midLng3 = baseLng + (destinationLng - baseLng) * 0.7 + (Math.random() * 0.008);
+    const safeRoute_midLat3 = baseLat + (destinationLat - baseLat) * 0.6 + (Math.random() * 0.01);
+    const safeRoute_midLng3 = baseLng + (destinationLng - baseLng) * 0.6 - (Math.random() * 0.01);
+    
+    const safeRoute_midLat4 = baseLat + (destinationLat - baseLat) * 0.8 - (Math.random() * 0.005);
+    const safeRoute_midLng4 = baseLng + (destinationLng - baseLng) * 0.8 + (Math.random() * 0.01);
+    
+    // Alternate Route - takes a different direction, maybe slightly longer
+    const altRoute_midLat1 = baseLat + (destinationLat - baseLat) * 0.3 - (randomizeFactor * 2);
+    const altRoute_midLng1 = baseLng + (destinationLng - baseLng) * 0.3 - (randomizeFactor * 1.5);
+    
+    const altRoute_midLat2 = baseLat + (destinationLat - baseLat) * 0.5 - (randomizeFactor * 1.8);
+    const altRoute_midLng2 = baseLng + (destinationLng - baseLng) * 0.5 - (randomizeFactor);
+    
+    const altRoute_midLat3 = baseLat + (destinationLat - baseLat) * 0.75 - (randomizeFactor * 0.5);
+    const altRoute_midLng3 = baseLng + (destinationLng - baseLng) * 0.75 - (randomizeFactor * 0.3);
+    
+    // Shortest Route - more direct but potentially less safe
+    const shortRoute_midLat1 = baseLat + (destinationLat - baseLat) * 0.33 + (Math.random() * 0.005);
+    const shortRoute_midLng1 = baseLng + (destinationLng - baseLng) * 0.33 + (Math.random() * 0.005);
+    
+    const shortRoute_midLat2 = baseLat + (destinationLat - baseLat) * 0.66 - (Math.random() * 0.005);
+    const shortRoute_midLng2 = baseLng + (destinationLng - baseLng) * 0.66 - (Math.random() * 0.005);
     
     // Create three different route variations
     const mainRoute = [
       [baseLng, baseLat],
-      [baseLng + (destinationLng - baseLng) * 0.25, baseLat + (destinationLat - baseLat) * 0.25],
-      [midLng1, midLat1],
-      [midLng2, midLat2],
-      [midLng3, midLat3],
+      [baseLng + (destinationLng - baseLng) * 0.1, baseLat + (destinationLat - baseLat) * 0.1],
+      [safeRoute_midLng1, safeRoute_midLat1],
+      [safeRoute_midLng2, safeRoute_midLat2],
+      [safeRoute_midLng3, safeRoute_midLat3],
+      [safeRoute_midLng4, safeRoute_midLat4],
+      [destinationLng - (Math.random() * 0.002), destinationLat - (Math.random() * 0.002)],
       [destinationLng, destinationLat]
     ];
     
     const alternateRoute = [
       [baseLng, baseLat],
-      [baseLng - 0.01, baseLat + 0.01],
-      [baseLng - 0.005, baseLat + (destinationLat - baseLat) * 0.4],
-      [baseLng + (destinationLng - baseLng) * 0.6, baseLat + (destinationLat - baseLat) * 0.6],
+      [altRoute_midLng1, altRoute_midLat1],
+      [altRoute_midLng2, altRoute_midLat2],
+      [altRoute_midLng3, altRoute_midLat3],
       [destinationLng, destinationLat]
     ];
     
     const shortestRoute = [
       [baseLng, baseLat],
-      [baseLng + (destinationLng - baseLng) * 0.3, baseLat + (destinationLat - baseLat) * 0.3],
-      [baseLng + (destinationLng - baseLng) * 0.6, baseLat + (destinationLat - baseLat) * 0.6],
+      [shortRoute_midLng1, shortRoute_midLat1],
+      [shortRoute_midLng2, shortRoute_midLat2],
       [destinationLng, destinationLat]
     ];
     
@@ -631,7 +655,11 @@ const GoogleMapsStyle = () => {
                       e.stopPropagation();
                       startNavigation(route);
                     }}
-                    className="w-full mt-3"
+                    className={`w-full mt-3 font-medium py-2.5 rounded-lg transition-all duration-200 ${
+                      route.isRecommended 
+                        ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl" 
+                        : "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 hover:border-gray-600"
+                    }`}
                     variant={route.isRecommended ? "default" : "outline"}
                   >
                     {route.isRecommended ? "Navigate this route (Recommended)" : "Navigate this route"}

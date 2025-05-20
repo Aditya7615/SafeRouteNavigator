@@ -29,7 +29,26 @@ export const cityCoordinates: Record<string, CityData> = {
       "Qutub Minar, Delhi",
       "Red Fort, Delhi",
       "Cyber City, Gurugram",
-      "Sector 18, Noida"
+      "Sector 18, Noida",
+      "Karol Bagh, Delhi",
+      "South Extension, Delhi",
+      "Lajpat Nagar, Delhi",
+      "Saket, Delhi",
+      "Dwarka, Delhi",
+      "Rajouri Garden, Delhi",
+      "Janakpuri, Delhi",
+      "Mayur Vihar, Delhi",
+      "Vasant Kunj, Delhi",
+      "Greater Kailash, Delhi",
+      "Hauz Khas, Delhi",
+      "Malviya Nagar, Delhi",
+      "Defence Colony, Delhi",
+      "Laxmi Nagar, Delhi",
+      "Chandni Chowk, Delhi",
+      "Nizamuddin, Delhi",
+      "Khan Market, Delhi",
+      "Lodhi Gardens, Delhi",
+      "Safdarjung, Delhi"
     ]
   },
   "Mumbai": {

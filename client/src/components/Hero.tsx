@@ -7,11 +7,11 @@ const Hero = () => {
 
   const handleFindSafeRoute = (startLocation: string, endLocation: string) => {
     setIsLoading(true);
-    // Simulate API call
+    // Set a brief loading state to show the loading indicator
     setTimeout(() => {
       setIsLoading(false);
-      window.location.hash = "how-it-works";
-    }, 1000);
+    }, 500);
+    // The redirection will be handled by the RouteForm component
   };
 
   return (
@@ -27,7 +27,7 @@ const Hero = () => {
               AI-powered real-time routing that prioritizes your safety using crime data, lighting conditions, and community insights.
             </p>
             
-            <RouteForm onSubmit={handleFindSafeRoute} isLoading={isLoading} />
+            <RouteForm onSubmit={handleFindSafeRoute} isLoading={isLoading} redirectToMap={true} />
           </div>
           <div className="md:w-1/2 md:pl-10">
             <div className="rounded-xl overflow-hidden shadow-2xl relative h-80 md:h-96 transition-all duration-500 hover:shadow-primary/20">

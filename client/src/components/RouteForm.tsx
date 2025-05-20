@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { cityCoordinates } from "@/lib/cities";
 
 interface RouteFormProps {
   onSubmit: (startLocation: string, endLocation: string) => void;
   isLoading?: boolean;
+  redirectToMap?: boolean;
 }
 
-const RouteForm = ({ onSubmit, isLoading = false }: RouteFormProps) => {
+const RouteForm = ({ onSubmit, isLoading = false, redirectToMap = false }: RouteFormProps) => {
   const { toast } = useToast();
   const [startLocation, setStartLocation] = useState("");
   const [endLocation, setEndLocation] = useState("");
+  const [, setLocation] = useLocation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +28,11 @@ const RouteForm = ({ onSubmit, isLoading = false }: RouteFormProps) => {
     }
     
     onSubmit(startLocation, endLocation);
+    
+    // If redirectToMap is true, navigate to the map page with search parameters
+    if (redirectToMap) {
+      setLocation(`/map?start=${encodeURIComponent(startLocation)}&end=${encodeURIComponent(endLocation)}`);
+    }
   };
 
   const popularIndianLocations = [
