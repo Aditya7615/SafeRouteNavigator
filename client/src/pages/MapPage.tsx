@@ -207,6 +207,14 @@ const MapPage = () => {
       metaDescription.setAttribute("content", "Explore real-time safety data across major Indian cities visualized on our interactive map.");
     }
   }, []);
+  
+  // Check URL parameters and auto-search for routes
+  useEffect(() => {
+    const params = getURLParams();
+    if (params.start && params.end) {
+      handleFindRoute(params.start, params.end);
+    }
+  }, []);
 
   const { data: mapData, isLoading, error } = useQuery<MapData>({
     queryKey: ['/api/map-data', selectedCity],
