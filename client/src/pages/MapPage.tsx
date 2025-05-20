@@ -5,7 +5,9 @@ import { useToast } from '@/hooks/use-toast';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import NavigationDirections from '@/components/NavigationDirections';
+import TurnByTurnDirections from '@/components/TurnByTurnDirections';
+import RouteForm from '@/components/RouteForm';
+import { Button } from '@/components/ui/button';
 
 // Fix Leaflet icon issue in React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -19,6 +21,24 @@ L.Icon.Default.mergeOptions({
   iconUrl: icon,
   shadowUrl: iconShadow
 });
+
+// Route comparison data interface
+interface RouteOption {
+  id: string;
+  type: string;
+  startLocation: string;
+  endLocation: string;
+  coordinates: Array<[number, number]>;
+  distance: string;
+  time: string;
+  safetyScore: number;
+  lighting: string;
+  color: string;
+  width: number;
+  safetyFactors?: string[];
+  safetyIssues?: string[];
+  isRecommended: boolean;
+}
 
 // Define interfaces for map data
 interface MarkerData {
@@ -47,7 +67,11 @@ interface MapData {
 const MapPage = () => {
   const { toast } = useToast();
   const [selectedCity, setSelectedCity] = useState("Delhi NCR");
-  const [selectedRoute, setSelectedRoute] = useState<any>(null);
+  const [startLocation, setStartLocation] = useState<string>("");
+  const [endLocation, setEndLocation] = useState<string>("");
+  const [routeOptions, setRouteOptions] = useState<RouteOption[]>([]);
+  const [showRouteOptions, setShowRouteOptions] = useState(false);
+  const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
   const [navigationActive, setNavigationActive] = useState(false);
   const [directions, setDirections] = useState<any[]>([]);
   const [activeLayers, setActiveLayers] = useState({
@@ -56,6 +80,7 @@ const MapPage = () => {
     crowd: true,
     reports: true
   });
+  const [isLoading, setIsLoading] = useState(false);
   
   // Generate directions based on the route
   const generateDirections = (route: any) => {
