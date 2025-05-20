@@ -136,7 +136,7 @@ const MapPage = () => {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-dark-200 text-white border border-gray-700 rounded-lg px-4 py-2"
+              className="bg-dark-200 text-gray-300 border border-gray-700 rounded-lg px-4 py-2"
             >
               {indianCities.map((city) => (
                 <option key={city} value={city}>{city}</option>
