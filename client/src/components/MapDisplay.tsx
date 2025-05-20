@@ -33,8 +33,9 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Set mapbox token
-  mapboxgl.accessToken = 'pk.eyJ1IjoicHVibGljLXNhZmV0eSIsImEiOiJjbHNna3VmOWkwMm51MnFwOGduYmxiNHQxIn0.qzCv-vB5DNzzzS1VHPhuJA';
+  // Set Mapbox token
+  // We have access to this token through the environment
+  mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94LW1hcHMiLCJhIjoiY2w5NzdvNWJ3MDR1NzN2bzFudGVzM3VjYSJ9.Dq7IDo-qSCtqIJyABnSf_g';
 
   useEffect(() => {
     // Initialize map
