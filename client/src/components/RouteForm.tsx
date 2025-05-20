@@ -60,7 +60,7 @@ const RouteForm = ({ onSubmit, isLoading = false, redirectToMap = false }: Route
               placeholder={popularIndianLocations[0]} 
               value={startLocation}
               onChange={(e) => setStartLocation(e.target.value)}
-              className="bg-gray-800 text-gray-300 rounded-lg pl-10 pr-4 py-3 w-full focus:ring-2 focus:ring-primary focus:outline-none border border-gray-700"
+              className="bg-gray-800 text-white rounded-lg pl-10 pr-4 py-3 w-full focus:ring-2 focus:ring-primary focus:outline-none border border-gray-600 shadow-inner"
               list="start-locations"
             />
             <datalist id="start-locations">
@@ -82,7 +82,7 @@ const RouteForm = ({ onSubmit, isLoading = false, redirectToMap = false }: Route
               placeholder={popularIndianLocations[1]} 
               value={endLocation}
               onChange={(e) => setEndLocation(e.target.value)}
-              className="bg-gray-800 text-gray-300 rounded-lg pl-10 pr-4 py-3 w-full focus:ring-2 focus:ring-primary focus:outline-none border border-gray-700"
+              className="bg-gray-800 text-white rounded-lg pl-10 pr-4 py-3 w-full focus:ring-2 focus:ring-primary focus:outline-none border border-gray-600 shadow-inner"
               list="end-locations"
             />
             <datalist id="end-locations">

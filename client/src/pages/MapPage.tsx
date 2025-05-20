@@ -67,8 +67,22 @@ interface MapData {
 const MapPage = () => {
   const { toast } = useToast();
   const [selectedCity, setSelectedCity] = useState("Delhi NCR");
-  const [startLocation, setStartLocation] = useState<string>("");
-  const [endLocation, setEndLocation] = useState<string>("");
+  
+  // Parse URL parameters for start and end locations if they exist
+  const getURLParams = () => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        start: params.get('start') || "",
+        end: params.get('end') || ""
+      };
+    }
+    return { start: "", end: "" };
+  };
+  
+  const urlParams = getURLParams();
+  const [startLocation, setStartLocation] = useState<string>(urlParams.start);
+  const [endLocation, setEndLocation] = useState<string>(urlParams.end);
   const [routeOptions, setRouteOptions] = useState<RouteOption[]>([]);
   const [showRouteOptions, setShowRouteOptions] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
@@ -80,7 +94,6 @@ const MapPage = () => {
     crowd: true,
     reports: true
   });
-  const [isLoading, setIsLoading] = useState(false);
   
   // Generate directions based on the route
   const generateDirections = (route: any) => {
