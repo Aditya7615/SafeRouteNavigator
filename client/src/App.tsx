@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
-import MapPage from "@/pages/MapPage";
+import GoogleMapsStyle from "@/pages/GoogleMapsStyle";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
@@ -16,7 +16,7 @@ function Router() {
       <main className="flex-grow">
         <Switch>
           <Route path="/" component={Home} />
-          <Route path="/map" component={MapPage} />
+          <Route path="/map" component={GoogleMapsStyle} />
           <Route component={NotFound} />
         </Switch>
       </main>
