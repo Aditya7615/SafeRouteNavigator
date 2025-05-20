@@ -417,18 +417,34 @@ const MapPage = () => {
                   />
                   
                   {/* Render markers */}
-                  {getMarkers().map((marker, index) => (
-                    <Marker 
-                      key={`marker-${index}`}
-                      position={[marker.lat, marker.lng]}
-                    >
-                      {marker.popup && (
-                        <Popup>
-                          <div dangerouslySetInnerHTML={{ __html: marker.popup }} />
-                        </Popup>
-                      )}
-                    </Marker>
-                  ))}
+                  {getMarkers().map((marker, index) => {
+                    let markerIcon = DefaultIcon;
+                    
+                    // Determine which icon to use based on color
+                    if (marker.color?.includes('#EF4444') || marker.color?.includes('red')) {
+                      markerIcon = RedIcon;
+                    } else if (marker.color?.includes('#F59E0B') || marker.color?.includes('amber') || marker.color?.includes('yellow')) {
+                      markerIcon = YellowIcon;
+                    } else if (marker.color?.includes('#8B5CF6') || marker.color?.includes('purple') || marker.color?.includes('violet')) {
+                      markerIcon = VioletIcon;
+                    } else if (marker.color?.includes('#10B981') || marker.color?.includes('green')) {
+                      markerIcon = GreenIcon;
+                    }
+                    
+                    return (
+                      <Marker 
+                        key={`marker-${index}`}
+                        position={[marker.lat, marker.lng]}
+                        icon={markerIcon}
+                      >
+                        {marker.popup && (
+                          <Popup>
+                            <div dangerouslySetInnerHTML={{ __html: marker.popup }} />
+                          </Popup>
+                        )}
+                      </Marker>
+                    );
+                  })}
                   
                   {/* Render selected route if in navigation mode */}
                   {navigationActive && selectedRoute && (
