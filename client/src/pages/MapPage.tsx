@@ -119,6 +119,33 @@ const MapPage = () => {
     
     let markers: MarkerData[] = [];
     
+    if (navigationActive && selectedRoute) {
+      // Add start and end markers for navigation
+      const startCoords = selectedRoute.coordinates?.[0];
+      const endCoords = selectedRoute.coordinates?.[selectedRoute.coordinates.length - 1];
+      
+      if (startCoords) {
+        markers.push({
+          lat: startCoords[1],
+          lng: startCoords[0],
+          color: '#10B981', // Green
+          popup: `<strong>Start:</strong> ${selectedRoute.startLocation}`
+        });
+      }
+      
+      if (endCoords) {
+        markers.push({
+          lat: endCoords[1],
+          lng: endCoords[0],
+          color: '#EF4444', // Red
+          popup: `<strong>Destination:</strong> ${selectedRoute.endLocation}`
+        });
+      }
+      
+      return markers;
+    }
+    
+    // Regular markers when not navigating
     if (activeLayers.crime && mapData.crimeHotspots) {
       markers.push(...mapData.crimeHotspots.map((spot) => ({
         ...spot,
@@ -147,7 +174,12 @@ const MapPage = () => {
   };
 
   // Convert coordinates format for Leaflet
-  const convertCoordinates = (coords: Array<[number, number]>) => {
+  const convertCoordinates = (coords: Array<[number, number]> | undefined) => {
+    if (!coords || !Array.isArray(coords)) {
+      // Return a default coordinate if coords is undefined
+      return [[28.6139, 77.2090]]; // Default to Delhi center
+    }
+    
     // For debugging
     console.log("Original coordinates:", coords);
     const converted = coords.map(([lng, lat]) => [lat, lng]);
@@ -168,7 +200,7 @@ const MapPage = () => {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-dark-200 text-gray-300 border border-gray-700 rounded-lg px-4 py-2"
+              className="bg-dark-200 text-white border border-gray-700 rounded-lg px-4 py-2"
             >
               {indianCities.map((city) => (
                 <option key={city} value={city}>{city}</option>

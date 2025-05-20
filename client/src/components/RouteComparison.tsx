@@ -40,11 +40,22 @@ const RouteComparison = () => {
       
       // Store the selected route info in sessionStorage
       if (routes && routes[index]) {
-        sessionStorage.setItem('selectedRoute', JSON.stringify({
+        // Make sure we have coordinates data
+        const routeToStore = {
           ...routes[index],
           startLocation,
           endLocation
-        }));
+        };
+        
+        // Default coordinates if missing, in format expected by Leaflet
+        if (!routeToStore.coordinates || !Array.isArray(routeToStore.coordinates)) {
+          routeToStore.coordinates = [
+            [77.2090, 28.6139], // From (Delhi center)
+            [77.2300, 28.6500]  // To (some other location)
+          ];
+        }
+        
+        sessionStorage.setItem('selectedRoute', JSON.stringify(routeToStore));
       }
       
       toast({
