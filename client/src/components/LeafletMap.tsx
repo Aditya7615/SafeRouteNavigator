@@ -3,19 +3,41 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import { Icon, LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for Leaflet marker icons in React - using direct URLs
-const ICON_URL = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png';
-const SHADOW_URL = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png';
-
-// Create custom default icon
-const defaultIcon = new Icon({
-  iconUrl: ICON_URL,
-  shadowUrl: SHADOW_URL,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+// Create custom icons for different marker types
+const markerIcons = {
+  default: new Icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  }),
+  crime: new Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  }),
+  lighting: new Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  }),
+  reports: new Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  })
+};
 
 interface RouteType {
   coordinates: Array<[number, number]>;
@@ -74,19 +96,27 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       ))}
       
       {/* Render markers */}
-      {markers.map((marker, index) => (
-        <Marker 
-          key={`marker-${index}`}
-          position={[marker.lat, marker.lng]}
-          icon={defaultIcon}
-        >
-          {marker.popup && (
-            <Popup>
-              <div dangerouslySetInnerHTML={{ __html: marker.popup }} />
-            </Popup>
-          )}
-        </Marker>
-      ))}
+      {markers.map((marker, index) => {
+        // Determine which icon to use based on color
+        let iconType = 'default';
+        if (marker.color?.includes('red')) iconType = 'crime';
+        else if (marker.color?.includes('yellow') || marker.color?.includes('amber')) iconType = 'lighting';
+        else if (marker.color?.includes('purple') || marker.color?.includes('violet')) iconType = 'reports';
+        
+        return (
+          <Marker 
+            key={`marker-${index}`}
+            position={[marker.lat, marker.lng]}
+            icon={markerIcons[iconType as keyof typeof markerIcons]}
+          >
+            {marker.popup && (
+              <Popup>
+                <div dangerouslySetInnerHTML={{ __html: marker.popup }} />
+              </Popup>
+            )}
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
 };
