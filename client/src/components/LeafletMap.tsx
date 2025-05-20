@@ -3,17 +3,18 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import { Icon, LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for Leaflet marker icons in React
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+// Fix for Leaflet marker icons in React - using direct URLs
+const ICON_URL = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png';
+const SHADOW_URL = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png';
 
-let DefaultIcon = Icon.Default.prototype;
-DefaultIcon.options.iconUrl = icon;
-DefaultIcon.options.shadowUrl = iconShadow;
-Icon.Default.mergeOptions({
-  iconRetinaUrl: icon,
-  iconUrl: icon,
-  shadowUrl: iconShadow
+// Create custom default icon
+const defaultIcon = new Icon({
+  iconUrl: ICON_URL,
+  shadowUrl: SHADOW_URL,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 interface RouteType {
@@ -77,6 +78,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
         <Marker 
           key={`marker-${index}`}
           position={[marker.lat, marker.lng]}
+          icon={defaultIcon}
         >
           {marker.popup && (
             <Popup>
