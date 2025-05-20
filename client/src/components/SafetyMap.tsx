@@ -83,7 +83,7 @@ const SafetyMap = ({ className = "" }: SafetyMapProps) => {
           {/* City selector */}
           <div className="absolute top-4 right-4 glass rounded-lg p-3 z-10">
             <select 
-              className="bg-dark-200 text-white border border-gray-700 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary shadow-lg"
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
             >
