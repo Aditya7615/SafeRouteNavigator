@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import RouteComparisonCard from "./RouteComparisonCard";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 const RouteComparison = () => {
   const { toast } = useToast();
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [animatingRouteIndex, setAnimatingRouteIndex] = useState<number | null>(null);
+  const [_, setLocation] = useLocation();
 
   const { data: routes, isLoading, error } = useQuery({
     queryKey: ['/api/routes/compare'],
@@ -22,15 +24,19 @@ const RouteComparison = () => {
     }
   }, [error, toast]);
 
-  const handleNavigate = (routeType: string) => {
-    setIsAnimating(true);
+  const handleNavigate = (routeType: string, index: number) => {
+    setAnimatingRouteIndex(index);
+    
     setTimeout(() => {
-      setIsAnimating(false);
+      setAnimatingRouteIndex(null);
       toast({
         title: `${routeType} selected`,
         description: `Navigation started for the ${routeType.toLowerCase()} route.`,
       });
-    }, 1000);
+      
+      // Navigate to the map page
+      setLocation("/map");
+    }, 1500);
   };
 
   return (
@@ -59,8 +65,8 @@ const RouteComparison = () => {
                 safetyIssues={route.safetyIssues}
                 isRecommended={route.isRecommended}
                 imageSrc={route.imageSrc}
-                isAnimating={isAnimating}
-                onNavigate={() => handleNavigate(route.type)}
+                isAnimating={animatingRouteIndex === index}
+                onNavigate={() => handleNavigate(route.type, index)}
               />
             ))}
           </div>
