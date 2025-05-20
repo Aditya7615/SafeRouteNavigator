@@ -116,7 +116,11 @@ const MapPage = () => {
 
   // Convert coordinates format for Leaflet
   const convertCoordinates = (coords: Array<[number, number]>) => {
-    return coords.map(([lng, lat]) => [lat, lng]);
+    // For debugging
+    console.log("Original coordinates:", coords);
+    const converted = coords.map(([lng, lat]) => [lat, lng]);
+    console.log("Converted coordinates:", converted);
+    return converted;
   };
 
   return (
