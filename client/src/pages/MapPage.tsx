@@ -46,12 +46,44 @@ interface MapData {
 const MapPage = () => {
   const { toast } = useToast();
   const [selectedCity, setSelectedCity] = useState("Delhi NCR");
+  const [selectedRoute, setSelectedRoute] = useState<any>(null);
+  const [navigationActive, setNavigationActive] = useState(false);
   const [activeLayers, setActiveLayers] = useState({
     crime: true,
     lighting: true,
     crowd: true,
     reports: true
   });
+  
+  // Parse query parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const routeType = params.get('route');
+    const start = params.get('start');
+    const end = params.get('end');
+    
+    // If we have route parameters, set navigation mode
+    if (routeType && start && end) {
+      setNavigationActive(true);
+      
+      // Try to get the stored route data
+      const storedRoute = sessionStorage.getItem('selectedRoute');
+      if (storedRoute) {
+        try {
+          const routeData = JSON.parse(storedRoute);
+          setSelectedRoute(routeData);
+          
+          // Show toast about active navigation
+          toast({
+            title: "Navigation Active",
+            description: `Following ${routeType} from ${start} to ${end}`,
+          });
+        } catch (e) {
+          console.error("Error parsing stored route:", e);
+        }
+      }
+    }
+  }, [toast]);
 
   // Update page title and meta description
   useEffect(() => {
@@ -212,8 +244,22 @@ const MapPage = () => {
                     </Marker>
                   ))}
                   
-                  {/* Render routes */}
-                  {mapData?.safeRoutes?.map((route, index) => (
+                  {/* Render selected route if in navigation mode */}
+                  {navigationActive && selectedRoute && (
+                    <Polyline 
+                      key="selected-route"
+                      positions={convertCoordinates(selectedRoute.coordinates) as any}
+                      pathOptions={{ 
+                        color: selectedRoute.color, 
+                        weight: selectedRoute.width + 2, // Make it slightly wider for emphasis 
+                        opacity: 0.9,
+                        dashArray: selectedRoute.type === "Regular Route" ? '5, 5' : undefined
+                      }}
+                    />
+                  )}
+                  
+                  {/* Render default routes when not navigating */}
+                  {!navigationActive && mapData?.safeRoutes?.map((route, index) => (
                     <Polyline 
                       key={`route-${index}`}
                       positions={convertCoordinates(route.coordinates) as any}
@@ -227,22 +273,62 @@ const MapPage = () => {
                   ))}
                 </MapContainer>
                 
-                {/* Map overlay elements */}
-                <div className="absolute bottom-4 left-4 glass rounded-lg p-3 z-[1000]">
-                  <div className="text-white text-sm font-medium mb-2">Safety Level</div>
-                  <div className="flex items-center mb-1">
-                    <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                    <span className="text-white text-xs">High Safety</span>
+                {/* Active navigation panel */}
+                {navigationActive && selectedRoute && (
+                  <div className="absolute top-4 left-4 right-4 glass rounded-lg p-4 z-[1000] border border-primary">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <div className={`p-2 rounded-full ${selectedRoute.type === "Safest Route" ? "bg-green-500/20" : "bg-red-500/20"} mr-3`}>
+                          <i className={`fas fa-${selectedRoute.type === "Safest Route" ? "shield-alt" : "exclamation-triangle"} text-${selectedRoute.type === "Safest Route" ? "green" : "red"}-500`}></i>
+                        </div>
+                        <div>
+                          <h3 className="text-white font-medium">{selectedRoute.type} Navigation</h3>
+                          <p className="text-gray-400 text-xs">
+                            {selectedRoute.startLocation} → {selectedRoute.endLocation}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        selectedRoute.safetyScore >= 80 ? "bg-green-500/20 text-green-500" : 
+                        selectedRoute.safetyScore >= 60 ? "bg-yellow-500/20 text-yellow-500" : 
+                        "bg-red-500/20 text-red-500"
+                      }`}>
+                        {selectedRoute.safetyScore}% Safe
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm text-white mb-2">
+                      <div className="flex items-center">
+                        <i className="fas fa-road mr-1 text-gray-400"></i> {selectedRoute.distance}
+                      </div>
+                      <div className="flex items-center">
+                        <i className="fas fa-clock mr-1 text-gray-400"></i> {selectedRoute.time}
+                      </div>
+                      <div className="flex items-center">
+                        <i className="fas fa-lightbulb mr-1 text-gray-400"></i> {selectedRoute.lighting}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center mb-1">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                    <span className="text-white text-xs">Moderate Safety</span>
+                )}
+                
+                {/* Map overlay elements - only show when not navigating */}
+                {!navigationActive && (
+                  <div className="absolute bottom-4 left-4 glass rounded-lg p-3 z-[1000]">
+                    <div className="text-white text-sm font-medium mb-2">Safety Level</div>
+                    <div className="flex items-center mb-1">
+                      <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                      <span className="text-white text-xs">High Safety</span>
+                    </div>
+                    <div className="flex items-center mb-1">
+                      <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                      <span className="text-white text-xs">Moderate Safety</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                      <span className="text-white text-xs">Low Safety</span>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                    <span className="text-white text-xs">Low Safety</span>
-                  </div>
-                </div>
+                )}
                 
                 <div className="absolute bottom-4 right-4 glass rounded-lg p-2 z-[1000]">
                   <span className="text-white text-xs">© SafeRoute Maps | Data © {new Date().getFullYear()}</span>

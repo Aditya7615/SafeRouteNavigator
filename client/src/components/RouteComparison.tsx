@@ -37,13 +37,23 @@ const RouteComparison = () => {
     
     setTimeout(() => {
       setAnimatingRouteIndex(null);
+      
+      // Store the selected route info in sessionStorage
+      if (routes && routes[index]) {
+        sessionStorage.setItem('selectedRoute', JSON.stringify({
+          ...routes[index],
+          startLocation,
+          endLocation
+        }));
+      }
+      
       toast({
         title: `${routeType} selected`,
         description: `Navigation started for the ${routeType.toLowerCase()} route.`,
       });
       
-      // Navigate to the map page
-      setLocation("/map");
+      // Navigate to the map page with query params
+      setLocation(`/map?route=${encodeURIComponent(routeType)}&start=${encodeURIComponent(startLocation)}&end=${encodeURIComponent(endLocation)}`);
     }, 1500);
   };
 
