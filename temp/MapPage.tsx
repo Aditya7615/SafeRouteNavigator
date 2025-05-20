@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import NavigationDirections from '../components/NavigationDirections';
 
 // Fix Leaflet icon issue in React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -88,7 +89,7 @@ const MapPage = () => {
       for (let i = 1; i < route.coordinates.length - 1; i++) {
         // Alternate between left and right turns for demo purposes
         const turnDirection = i % 2 === 0 ? "Turn right" : "Turn left";
-        const segment = {
+        const segment: any = {
           instruction: `${turnDirection} onto ${streets[i % streets.length]}`,
           distance: `${(0.3 + Math.random() * 0.7).toFixed(1)} km`,
           time: `${Math.floor(3 + Math.random() * 5)} min`,
@@ -438,15 +439,7 @@ const MapPage = () => {
             )}
           </div>
           
-          {navigationActive && selectedRoute ? (
-            <div className="glass p-5 rounded-xl border border-primary">
-              <NavigationDirections 
-                directions={directions}
-                routeType={selectedRoute.type}
-                safetyScore={selectedRoute.safetyScore}
-              />
-            </div>
-          ) : (
+          {!navigationActive ? (
             <div className="glass p-5 rounded-xl border border-gray-700">
               <h2 className="text-2xl font-bold font-heading text-white mb-4">Safety Insights</h2>
               <div className="mb-5">
@@ -463,79 +456,88 @@ const MapPage = () => {
                 </div>
               </div>
             
-            <div className="mb-6">
-              <div className="text-gray-400 text-sm mb-3">Safety Breakdown</div>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-400">Crime Rate</span>
-                    <span className="text-white">Low</span>
+              <div className="mb-6">
+                <div className="text-gray-400 text-sm mb-3">Safety Breakdown</div>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-400">Crime Rate</span>
+                      <span className="text-white">Low</span>
+                    </div>
+                    <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: '20%' }}></div>
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: '20%' }}></div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-400">Street Lighting</span>
+                      <span className="text-white">Good</span>
+                    </div>
+                    <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: '80%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-400">Crowd Density</span>
+                      <span className="text-white">Moderate</span>
+                    </div>
+                    <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-yellow-500 rounded-full" style={{ width: '50%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-400">Emergency Services</span>
+                      <span className="text-white">High</span>
+                    </div>
+                    <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: '90%' }}></div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-400">Street Lighting</span>
-                    <span className="text-white">Good</span>
+              </div>
+              
+              <div>
+                <div className="text-gray-400 text-sm mb-3">Recent Community Alerts</div>
+                <div className="space-y-3">
+                  <div className="bg-dark-100 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <div className="bg-red-500/20 text-red-500 p-1 rounded mr-2">
+                          <span>⚠️</span>
+                        </div>
+                        <span className="text-white text-sm font-medium">Road Blockade</span>
+                      </div>
+                      <span className="text-gray-400 text-xs">10 min ago</span>
+                    </div>
+                    <p className="text-gray-300 text-sm">Construction blocking main road near Central Market. Use alternate routes.</p>
                   </div>
-                  <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: '80%' }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-400">Crowd Density</span>
-                    <span className="text-white">Moderate</span>
-                  </div>
-                  <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-yellow-500 rounded-full" style={{ width: '50%' }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-400">Emergency Services</span>
-                    <span className="text-white">High</span>
-                  </div>
-                  <div className="h-1.5 bg-dark-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: '90%' }}></div>
+                  
+                  <div className="bg-dark-100 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <div className="bg-amber-500/20 text-amber-500 p-1 rounded mr-2">
+                          <span>⚠️</span>
+                        </div>
+                        <span className="text-white text-sm font-medium">Poor Lighting</span>
+                      </div>
+                      <span className="text-gray-400 text-xs">1 hr ago</span>
+                    </div>
+                    <p className="text-gray-300 text-sm">Street lights not working on Avenue Road. Area is dark at night.</p>
                   </div>
                 </div>
               </div>
             </div>
-            
-            <div>
-              <div className="text-gray-400 text-sm mb-3">Recent Community Alerts</div>
-              <div className="space-y-3">
-                <div className="bg-dark-100 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      <div className="bg-red-500/20 text-red-500 p-1 rounded mr-2">
-                        <span>⚠️</span>
-                      </div>
-                      <span className="text-white text-sm font-medium">Road Blockade</span>
-                    </div>
-                    <span className="text-gray-400 text-xs">10 min ago</span>
-                  </div>
-                  <p className="text-gray-300 text-sm">Construction blocking main road near Central Market. Use alternate routes.</p>
-                </div>
-                
-                <div className="bg-dark-100 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      <div className="bg-amber-500/20 text-amber-500 p-1 rounded mr-2">
-                        <span>⚠️</span>
-                      </div>
-                      <span className="text-white text-sm font-medium">Poor Lighting</span>
-                    </div>
-                    <span className="text-gray-400 text-xs">1 hr ago</span>
-                  </div>
-                  <p className="text-gray-300 text-sm">Street lights not working on Avenue Road. Area is dark at night.</p>
-                </div>
-              </div>
+          ) : (
+            <div className="glass p-5 rounded-xl border border-primary">
+              <NavigationDirections 
+                directions={directions}
+                routeType={selectedRoute?.type || ""}
+                safetyScore={selectedRoute?.safetyScore || 0}
+              />
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
