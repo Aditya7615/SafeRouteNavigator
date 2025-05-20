@@ -12,15 +12,21 @@ import { Button } from '@/components/ui/button';
 // Fix Leaflet icon issue in React
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 
-let DefaultIcon = L.Icon.Default.prototype;
-DefaultIcon.options.iconUrl = icon;
-DefaultIcon.options.shadowUrl = iconShadow;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: icon,
+// Create custom marker icons to ensure they display properly
+const DefaultIcon = new L.Icon({
   iconUrl: icon,
-  shadowUrl: iconShadow
+  shadowUrl: iconShadow,
+  iconRetinaUrl: iconRetina,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
+
+// Set the default icon for all markers
+L.Marker.prototype.options.icon = DefaultIcon;
 
 // Route comparison data interface
 interface RouteOption {
