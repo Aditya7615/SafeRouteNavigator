@@ -7,6 +7,15 @@ input, select, textarea {
   @apply text-gray-300;
 }
 
+/* Fix for Leaflet marker icons */
+.leaflet-default-icon-path {
+  background-image: url(https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png);
+}
+
+.leaflet-marker-shadow {
+  background-image: url(https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png);
+}
+
 
 :root {
   --background: 240 10% 3.9%;
