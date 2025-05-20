@@ -92,7 +92,35 @@ export class MemStorage implements IStorage {
   }
 
   // Route operations
-  getRouteComparison(): any[] {
+  getRouteComparison(start?: string, end?: string): any[] {
+    // If we have start and end locations, customize the route data
+    if (start && end) {
+      // Create a copy of the mock data
+      const customRoutes = JSON.parse(JSON.stringify(mockRouteComparisonData));
+      
+      // Update the distance and time based on the actual locations
+      customRoutes[0].startLocation = start;
+      customRoutes[0].endLocation = end;
+      customRoutes[1].startLocation = start;
+      customRoutes[1].endLocation = end;
+      
+      // Generate slightly different distance and time for different locations
+      const distance = (5 + Math.random() * 3).toFixed(1); // Between 5 and 8 km
+      const safestDistance = (parseFloat(distance) - 0.5).toFixed(1); // Slightly shorter
+      
+      const time = Math.floor(10 + Math.random() * 5); // Between 10 and 15 minutes
+      const safestTime = Math.floor(time * 1.1); // Slightly longer
+      
+      customRoutes[0].distance = `${safestDistance} km`; // Safest route
+      customRoutes[0].time = `${safestTime} min`;
+      
+      customRoutes[1].distance = `${distance} km`; // Regular route
+      customRoutes[1].time = `${time} min`;
+      
+      return customRoutes;
+    }
+    
+    // If no start/end provided, return the default mock data
     return mockRouteComparisonData;
   }
 

@@ -7,7 +7,8 @@ import { ZodError } from "zod";
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
   app.get('/api/routes/compare', (req, res) => {
-    const routes = storage.getRouteComparison();
+    const { start, end } = req.query;
+    const routes = storage.getRouteComparison(start as string, end as string);
     res.json(routes);
   });
 

@@ -8,9 +8,12 @@ const RouteComparison = () => {
   const { toast } = useToast();
   const [animatingRouteIndex, setAnimatingRouteIndex] = useState<number | null>(null);
   const [_, setLocation] = useLocation();
+  const [startLocation, setStartLocation] = useState("Connaught Place, Delhi");
+  const [endLocation, setEndLocation] = useState("India Gate, Delhi");
 
+  // Pass the locations as parameters to get meaningful distances
   const { data: routes, isLoading, error } = useQuery({
-    queryKey: ['/api/routes/compare'],
+    queryKey: ['/api/routes/compare', startLocation, endLocation],
     staleTime: 60000, // 1 minute
   });
 
