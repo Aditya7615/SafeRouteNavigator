@@ -98,30 +98,113 @@ export class MemStorage implements IStorage {
       // Create a copy of the mock data
       const customRoutes = JSON.parse(JSON.stringify(mockRouteComparisonData));
       
-      // Update the distance and time based on the actual locations
+      // Update the locations
       customRoutes[0].startLocation = start;
       customRoutes[0].endLocation = end;
       customRoutes[1].startLocation = start;
       customRoutes[1].endLocation = end;
       
-      // Generate slightly different distance and time for different locations
-      const distance = (5 + Math.random() * 3).toFixed(1); // Between 5 and 8 km
-      const safestDistance = (parseFloat(distance) - 0.5).toFixed(1); // Slightly shorter
+      // Generate unique coordinates for each route based on location string
+      // In a real app, we would geocode these locations and use actual coordinates
+      const generateCoordinates = (baseLat: number, baseLng: number, isSafeRoute: boolean): Array<[number, number]> => {
+        // Create a basic pattern based on location strings to simulate different routes
+        const startHash = this.hashString(start) % 100 / 1000;
+        const endHash = this.hashString(end) % 100 / 1000;
+        
+        // Base coordinates around Delhi (or adjust based on city)
+        const lat = baseLat + startHash;
+        const lng = baseLng + endHash;
+        
+        // Generate a path with 5-7 points
+        const pointCount = 5 + Math.floor(Math.random() * 3);
+        const path: Array<[number, number]> = [];
+        
+        // Create a path from start to end with some variation
+        for (let i = 0; i < pointCount; i++) {
+          const progress = i / (pointCount - 1); // 0 to 1
+          
+          // Create two slightly different paths for safe vs regular routes
+          let waypointLat, waypointLng;
+          
+          if (isSafeRoute) {
+            // Safe route - more direct path with slight northern curve
+            waypointLat = lat + (baseLat - lat) * progress + (Math.sin(progress * Math.PI) * 0.01);
+            waypointLng = lng + (baseLng - lng) * progress;
+          } else {
+            // Regular route - slightly longer southern path
+            waypointLat = lat + (baseLat - lat) * progress - (Math.sin(progress * Math.PI) * 0.01);
+            waypointLng = lng + (baseLng - lng) * progress + (Math.sin(progress * Math.PI) * 0.005);
+          }
+          
+          path.push([waypointLng, waypointLat]);
+        }
+        
+        return path;
+      };
       
-      const time = Math.floor(10 + Math.random() * 5); // Between 10 and 15 minutes
-      const safestTime = Math.floor(time * 1.1); // Slightly longer
+      // Generate route data with more realistic paths
+      const safeRoute = generateCoordinates(28.6139, 77.209, true);
+      const regularRoute = generateCoordinates(28.6139, 77.209, false);
       
-      customRoutes[0].distance = `${safestDistance} km`; // Safest route
-      customRoutes[0].time = `${safestTime} min`;
+      // Set the coordinates for both routes
+      customRoutes[0].coordinates = safeRoute;
+      customRoutes[1].coordinates = regularRoute;
       
-      customRoutes[1].distance = `${distance} km`; // Regular route
-      customRoutes[1].time = `${time} min`;
+      // Calculate realistic distance based on path length
+      const calcDistance = (coords: Array<[number, number]>): number => {
+        let total = 0;
+        for (let i = 1; i < coords.length; i++) {
+          total += this.haversineDistance(
+            coords[i-1][1], coords[i-1][0], 
+            coords[i][1], coords[i][0]
+          );
+        }
+        return total;
+      };
+      
+      // Calculate distances
+      const safeDistance = calcDistance(safeRoute);
+      const regularDistance = calcDistance(regularRoute);
+      
+      // Update the distances and times
+      customRoutes[0].distance = `${safeDistance.toFixed(1)} km`;
+      customRoutes[0].time = `${Math.ceil(safeDistance * 12)} min`; // Approx. 5 km/h walking speed
+      
+      customRoutes[1].distance = `${regularDistance.toFixed(1)} km`;
+      customRoutes[1].time = `${Math.ceil(regularDistance * 10)} min`; // Slightly faster but less safe
       
       return customRoutes;
     }
     
     // If no start/end provided, return the default mock data
     return mockRouteComparisonData;
+  }
+  
+  // Helper method to calculate distance between coordinates using Haversine formula
+  private haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Earth's radius in km
+    const dLat = this.toRad(lat2 - lat1);
+    const dLon = this.toRad(lon2 - lon1);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+  
+  private toRad(value: number): number {
+    return value * Math.PI / 180;
+  }
+  
+  // Simple string hash function to get consistent variation based on location names
+  private hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
   }
 
   createRoute(insertRoute: InsertRoute): Route {
